@@ -1,54 +1,40 @@
-#include <queue>
-#include <utility>
-#include <string>
-#include <iostream>
-
-using namespace std;
-
 class Solution {
-private:
-    int isPalindrome(string s) {
-        for (int i = 0; i < s.size() / 2; i++) {
-            if (s[i] != s[s.size() - 1 - i])
-                return 0;
-        }
-        
-        return 1;
-    }
 public:
-    int minCut(string s) {
-        // Start typing your C/C++ solution below
-        // DO NOT write int main() function
-        queue<string> q;         
-        int cutedString[s.size() - 1];// = { 0 };
-        q.push(s);
-        for (int i = 1; i < s.size(); i++)
-            cutedString[i] = 0;
-        int cut = 0;
-        cutedString[0] = 1;
+    int minCut(string s) {        
+        int n = s.length();
+        // isPalin[i][j] means if s[i..j] is a palindrome
+        // obviously, we have isPalin[i][i] = true
+        bool isPalin[n][n];
+        /*
+         * storage of optimal value of sub-problem
+         * subCut[i] means min cut of substr[0..i]
+         * we at least can cut the string into palindrome substring
+         * by take as substring every single character and
+         * string of length 1 always is a palindrome
+         */
+        int subCut[n];
         
-        while (!q.empty()) {
-            string s = q.front(); 
-            int i = 1;
-            while (i <= s.size()) {
-                if (isPalindrome(s.substr(0, i))) {                             
-                    q.push(s.substr(i, s.size() - i));
-                    cutedString[cut + 1]++;
-                    if (i == s.size()) //first match
-                        return cut;
-                }                
-                i++;
-            }
-            cutedString[cut]--;
-            if (cutedString[cut] == 0)
-                cut++;
-            q.pop();
+        for (int i = 0; i < n; i++) {
+            subCut[i] = i + 1;
         }
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                isPalin[i][j] = false;
+            }
+        }
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= i; j++) {                
+                if (s[i] == s[j] && (i - j < 2 || isPalin[j + 1][i - 1]))
+                    isPalin[j][i] = true;
+                if (isPalin[j][i] && j > 0)
+                    subCut[i] = min(subCut[i], subCut[j - 1] + 1);
+                else if (isPalin[j][i] && j == 0)
+                    subCut[i] = 1;
+                    
+            }
+        }
+        return subCut[n - 1] - 1;
     }
 };
-
-int main() {
-	Solution s;
-	cout << "min cut of fifgbeajcacehiicccfecbfhhgfiiecdcjjffbghdidbhbdbfbfjccgbbdcjheccfbhafehieabbdfeigbiaggchaeghaijfbjhi = " <<
-		s.minCut("fifgbeajcacehiicccfecbfhhgfiiecdcjjffbghdidbhbdbfbfjccgbbdcjheccfbhafehieabbdfeigbiaggchaeghaijfbjhi");
-}
