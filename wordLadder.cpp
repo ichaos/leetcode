@@ -1,73 +1,69 @@
-/**
- * Test case:
- *  "a", "c", ["a", "b, "c"]
-   
-"hot", "dog", ["hot","dog"] 0   0   
-   
-"hot", "dog", ["hot","dog","dot"]   0   3   
-   
-"hot", "dot", ["hot","dot","dog"]   1   2   
-   
-"hot", "dog", ["hot","cog","dog","tot","hog","hop","pot","dot"] 0   3   
-   
-"hot", "dog", ["hot","dog","cog","pot","dot"]   0   3   
-   
-"hit", "cog", ["hot","cog","dot","dog","hit","lot","log"]   0   5   
-   
-"hit", "cog", ["hot","hit","cog","dot","dog"]   0   5   
-   
-"red", "tax", ["ted","tex","red","tax","tad","den","rex","pee"] 0   4   
-   
-"lost", "cost", ["most","fist","lost","cost","fish"]    1   2   
-   
-"lost", "miss", ["most","mist","miss","lost","fist","fish"] 0   4   
-   
-"leet", "code", ["lest","leet","lose","code","lode","robe","lost"]  0   6   
-   
-"talk", "tail", ["talk","tons","fall","tail","gale","hall","negs"]
- */
 class Solution {
+private:
+    struct vertex {
+        int d;
+        int visited;
+        //string data;
+        vector<int> neighbour;        
+    };
+    
+    bool isConnect(string a, string b) {
+        int diffcnt = 0;
+        if (a.size() != b.size()) return false;
+        for (int i = 0; i < a.size(); i++) {
+            if (a[i] != b[i]) {
+                if (diffcnt) return false;
+                diffcnt++;
+            }
+        }
+        return diffcnt == 1;
+    }
+    
 public:
     int ladderLength(string start, string end, unordered_set<string> &dict) {
         // Start typing your C/C++ solution below
         // DO NOT write int main() function
-        if (start == end) return 1;
-        int slen = start.size();
-        unordered_map<string, pair<int, int> > results;
-        queue<string> q;
-        q.push(start);
-        results[start] = make_pair(1, 0);
+        if (isConnect(start, end)) return 2;
+        vector<string> words;
+        //dict.insert(start);
+        for (unordered_set<string>::iterator it = dict.begin(); it != dict.end(); it++) {
+            words.push_back(*it);
+        }
+        words.push_back(start);
+        vector<vertex> graph(words.size());
+        vertex *gp = graph.data();
+        vertex *s;
+        for (vector<string>::size_type i = 0; i < words.size(); i++) {
+            //gp[i].data = words[i];
+            //gp[i].d = 0;
+            //gp[i].visited = 0;
+            if (words[i] == start) s = gp + i;
+            for (vector<string>::size_type j = i + 1; j < words.size(); j++) {
+                if (isConnect(words[i], words[j])) {
+                    gp[i].neighbour.push_back(j);
+                    gp[j].neighbour.push_back(i);
+                }
+            }
+        }
+        
+        queue<vertex *> q;
+        q.push(s);
+        
         while (!q.empty()) {
-            string cur = q.front();            
+            vertex *v = q.front();
             q.pop();
-            results[cur].second = 1;
-            unordered_map<string, pair<int, int> >::iterator it;// = results.find(cur);
-            //find all variations by one transformation                      
-            for (int i = 0; i < slen; i++) {
-                for (int j = 0; j < 26; j++) {
-                    if (cur[i] - 'a' == j) continue;
-                    
-                    string var = cur;
-                    var.replace(i, 1, 1, 'a' + j);
-                    if (dict.find(var) == dict.end()) continue;
-                    if (var == end) {
-                        return results[cur].first + 1;
-                    }
-                    //check var
-                    it = results.find(var);
-                    if (it != results.end()) {
-                        if (it->second.second == 1)
-                            continue;
-                        if (it->second.first > results[cur].first + 1) {
-                            it->second.first = results[cur].first + 1;
-                        }
-                    } else {
-                        results[var] = make_pair(results[cur].first + 1, 0);
-                    }     
-                    q.push(var);
-                }                
+            v->visited = 1;
+            //if (isConnect(end, v->data)) return v->d + 2;
+            for (int i = 0; i < v->neighbour.size(); i++) {
+                int j = v->neighbour[i];
+                if (gp[j].visited) continue;
+                if (isConnect(end, words[j])) {
+                    return v->d + 3;
+                }
+                gp[j].d = v->d + 1;
+                q.push(gp + j);
             }
         }
         return 0;
-    }    
+    }
 };
