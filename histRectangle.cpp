@@ -1,37 +1,21 @@
 class Solution {
 public:
     int largestRectangleArea(vector<int> &height) {
-        // Start typing your C/C++ solution below
-        // DO NOT write int main() function
-        int maxArea = 0;
-        int n = height.size();
-        int left, right;
-        int area;
-        for (int i = 0; i < n; i++) {
-            //find left boundary
-            left = i - 1;
-            while (left >= 0) {
-                if (height[left] >= height[i]) {
-                    left--;
-                } else {
-                    break;
-                }
-            }
-            left++;
-            right = i + 1;
-            while (right < n) {
-                if (height[right] >= height[i]) {
-                    right++;
-                } else {
-                    break;
-                }
-            }
-            right--;
-            area = (right - left + 1) * height[i];
-            if (area > maxArea) {
-                maxArea = area;
-            }
+    // Start typing your C/C++ solution below
+    // DO NOT write int main() function
+    int maxArea = 0;
+    stack<int> s;
+    height.push_back(0);
+    int i = 0; 
+    while (i < height.size()) {
+        if (s.empty() || height[s.top()] <= height[i]) {
+            s.push(i++);
+        } else {
+            int t = s.top();
+            s.pop();
+            maxArea = max(maxArea, height[t] * ((s.empty()) ? i : i - s.top() - 1));
         }
-        return maxArea;
     }
+    return maxArea;
+}
 };
