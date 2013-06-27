@@ -2,10 +2,12 @@
  * Given an index k, return the kth row of the Pascal's triangle.
 
 For example, given k = 3,
-Return [1,3,3,1].
+Return [1,3,3,1]. 
+ * i.e. [C(3,0), C(3,1), C(3,2), C(3,3)]
 
 Note:
 Could you optimize your algorithm to use only O(k) extra space?
+
  */
 
 class Solution {
