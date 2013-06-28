@@ -13,7 +13,7 @@ class vertex_comparison {
         vertex_comparison() {}
            
         bool operator() (const vertex *l, const vertex *r) const {
-            return l->d <= r->d;
+            return l->d < r->d;
         }
     };
 
@@ -67,10 +67,15 @@ public:
         
         s->d = 1;
         
-        set<vertex *, vertex_comparison> q;
-        q.insert(s);
+        for (auto i : s->neighbour)
+            gp[i].d = 2;
         
-        while (!q.empty() && e->visited == 0) {
+        set<vertex *, vertex_comparison> q;
+        for (int i = 0; i < words.size(); ++i)
+            q.insert(gp + i);
+        //q.insert(s);
+        
+        while (e->visited == 0) {
             vertex *v = *q.begin();
             q.erase(q.begin());
             v->visited = 1;
