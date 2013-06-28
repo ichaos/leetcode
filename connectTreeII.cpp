@@ -1,4 +1,30 @@
 /**
+ * Follow up for problem "Populating Next Right Pointers in Each Node".
+
+What if the given tree could be any binary tree? Would your previous solution still work?
+
+Note:
+
+You may only use constant extra space.
+For example,
+Given the following binary tree,
+
+         1
+       /  \
+      2    3
+     / \    \
+    4   5    7
+After calling your function, the tree should look like:
+
+         1 -> NULL
+       /  \
+      2 -> 3 -> NULL
+     / \    \
+    4-> 5 -> 7 -> NULL
+ *
+ */
+
+/**
  * Definition for binary tree with next pointer.
  * struct TreeLinkNode {
  *  int val;
@@ -13,46 +39,54 @@ public:
         // DO NOT write int main() function
         if (!root) return;
         
-        TreeLinkNode *tmp;
+        queue<TreeLinkNode *> q;
+        q.push(root);
         
-        if (root->left) {
-            if (root->right) {
-                root->left->next = root->right;
-            } else {
-                tmp = root->next;
-                while (!root->left->next) {
+        TreeLinkNode *tmp, *cur;
+        
+        while (!q.empty()) {
+            cur = q.front();
+            q.pop();
+            
+            if (cur->left) {
+                if (cur->right) {
+                    cur->left->next = cur->right;
+                } else {
+                    tmp = cur->next;
+                    while (!cur->left->next) {
+                        if (tmp) {
+                            if (tmp->left) {
+                                cur->left->next = tmp->left;
+                            } else
+                                cur->left->next = tmp->right;
+                            tmp = tmp->next;
+                        } else {
+                            cur->left->next = NULL;
+                            break;
+                        }
+                    }
+                }
+                q.push(cur->left);
+            }
+        
+            if (cur->right) {
+                tmp = cur->next;
+                while (!cur->right->next) {
                     if (tmp) {
                         if (tmp->left) {
-                            root->left->next = tmp->left;
-                        } else
-                            root->left->next = tmp->right;
+                            cur->right->next = tmp->left;
+                        } else {
+                            cur->right->next = tmp->right;
+                        }
                         tmp = tmp->next;
                     } else {
-                        root->left->next = NULL;
+                        cur->right->next = NULL;
                         break;
                     }
                 }
-            }
+                q.push(cur->right);
+            }            
+            
         }
-        
-        if (root->right) {
-            tmp = root->next;
-            while (!root->right->next) {
-                if (tmp) {
-                    if (tmp->left) {
-                        root->right->next = tmp->left;
-                    } else {
-                        root->right->next = tmp->right;
-                    }
-                    tmp = tmp->next;
-                } else {
-                    root->right->next = NULL;
-                    break;
-                }
-            }
-        }
-        
-        connect(root->left);
-        connect(root->right);
     }
 };
