@@ -13,27 +13,41 @@ public:
         // DO NOT write int main() function
         if (!root) return;
         
+        TreeLinkNode *tmp;
+        
         if (root->left) {
             if (root->right) {
                 root->left->next = root->right;
             } else {
-                if (root->next) {
-                    if (root->next->left) {
-                        root->left->next = root->next->left;
-                    } else
-                        root->left->next = root->next->right;
-                } else {
-                    root->left->next = NULL;
+                tmp = root->next;
+                while (!root->left->next) {
+                    if (tmp) {
+                        if (tmp->left) {
+                            root->left->next = tmp->left;
+                        } else
+                            root->left->next = tmp->right;
+                        tmp = tmp->next;
+                    } else {
+                        root->left->next = NULL;
+                        break;
+                    }
                 }
             }
         }
         
         if (root->right) {
-            if (root->next) {
-                if (root->next->left) {
-                    root->right->next = root->next->left;
+            tmp = root->next;
+            while (!root->right->next) {
+                if (tmp) {
+                    if (tmp->left) {
+                        root->right->next = tmp->left;
+                    } else {
+                        root->right->next = tmp->right;
+                    }
+                    tmp = tmp->next;
                 } else {
-                    root->right->next = root->next->right;
+                    root->right->next = NULL;
+                    break;
                 }
             }
         }
