@@ -17,13 +17,8 @@ Bonus point if you are able to do this using only O(n) extra space, where n is t
 
 class Solution {
 private:
-    int pathSum(vector<vector<int> > &triangle, int level, int i) {
-        if (level == triangle.size()) return triangle[level - 1][i - 1];
-        int left = pathSum(triangle, level + 1, i);
-        int right = pathSum(triangle, level + 1, i + 1);
-        if (left > right) left = right;
-        
-        return left + triangle[level - 1][i - 1];
+    int min(int a, int b) {
+        return (a < b) ? a : b;
     }
 
 public:
@@ -31,7 +26,21 @@ public:
         // Start typing your C/C++ solution below
         // DO NOT write int main() function
         if (triangle.size() < 1) return 0;
+        if (triangle.size() == 1) return triangle[0][0];
         
-        return pathSum(triangle, 1, 1);
+        int level = triangle.size();
+        
+        int lll = triangle[level - 1].size();
+        int minp[lll];
+        for (int i = 0; i < lll; i++)
+            minp[i] = triangle[level - 1][i];
+        
+        for (int i = level; i > 1; i--) {
+            for (int j = 0; j < triangle[i - 2].size(); j++) {
+                minp[j] = triangle[i - 2][j] + min(minp[j], minp[j + 1]);
+            }
+        }
+        //return pathSum(triangle, 1, 1);
+        return minp[0];
     }
 };
