@@ -8,32 +8,46 @@ S = "rabbbit", T = "rabbit"
 
 Return 3.
  */
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 class Solution {
-public:
+    public:
     int numDistinct(string S, string T) {
-        // Start typing your C/C++ solution below
-        // DO NOT write int main() function
         int ss = S.size();
         int ts = T.size();
-	    if (ss < ts) return 0;
-	    if (ts == 0) return 1;
-	    int sum = 0;
-
-	    if (ts == 1) {
-		    for (int i = 0; i < ss; i++) {
-			    if (S[i] == T[0])
-				    sum++;
-		    }
-		    return sum;
-	    }
-
-	    for (int i = 0; i < ss; i++) {
-		    if (S[i] == T[0]) {
-			    sum += numDistinct(S.substr(i + 1), T.substr(1));
-		    }
-	    }
-
-	    return sum;
+        
+        if (ss == 0 || ts == 0) return 0;
+        
+        int f[ts + 1][ss + 1];
+        for (int i = 0; i <= ts; i++) {
+            for (int j = 0; j <= ss; j++) {
+                f[i][j] = 0;
+            }
+        }
+        for (int j = 0; j <= ss; j++) {
+            f[0][j] = 1;
+        }
+        
+        for (int i = 1; i <= ts; i++) {
+            for (int j = 1; j <= ss; j++) {
+                if (T[i - 1] == S[j - 1]) {
+                    f[i][j] = f[i - 1][j - 1] + f[i][j - 1];
+                } else
+                    f[i][j] = f[i][j - 1];
+            }
+        }
+        return f[ts][ss];
     }
 };
+
+int main() {
+	string s = "aaaa";
+	string t = "aa";
+
+	Solution sl;
+
+	cout << "1. " << sl.numDistinct(s, t) << endl;
+}
