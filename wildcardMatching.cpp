@@ -19,53 +19,67 @@ isMatch("ab", "?*") ? true
 isMatch("aab", "c*a*b") ? false
  */
 class Solution {
-private:
-    struct wildcard {
-        const char *s;
-        const char *p;
-        wildcard(const char *ss, const char *pp) : s(ss), p(pp) {}
-    };
 public:
     bool isMatch(const char *s, const char *p) {
         // Start typing your C/C++ solution below
         // DO NOT write int main() function
-        stack<wildcard> stk;
+        if (!s && !p) return true;
         
-        wildcard wc(s, p);
-        stk.push(wc);
+        int sl = 0;
+        const char *ss = s;
+        while (ss[0] != '\0') {
+            sl++;
+            ss++;
+        }
+        int pl = 0;
+        const char *pp = p;
+        while (pp[0] != '\0') {
+            pp++;
+            pl++;
+        }
         
-        while (!stk.empty()) {
-            wildcard wc = stk.top();
-            stk.pop();
-            
-            if (wc.s[0] == '\0' && wc.p[0] == '\0') return true;
-            
-            if (wc.p[0] == '?') {
-                if (wc.s[0] != '\0') {
-                    wc.s++;
-                    wc.p++;
-                    stk.push(wc);
-                }
-            } else if (wc.p[0] == '*') {
-                if (wc.s[0] == '\0') {
-                    wc.p++;
-                    stk.push(wc);
-                } else {
-                    wildcard t1(wc.s, wc.p + 1);
-                    stk.push(t1);
-                    t1.s = wc.s + 1;
-                    t1.p = wc.p;
-                    stk.push(t1);
-                    t1.s = wc.s + 1;
-                    t1.p = wc.p + 1;
-                    stk.push(t1);
-                }
-            } else if (wc.s[0] == wc.p[0]) {
-                wc.s++;
-                wc.p++;
-                stk.push(wc);
+        if (s[0] == '\0') {
+            pp = p;
+            while (pp[0] == '*') {
+                pp++;
+            }
+            if (pp[0] != '\0') return false;
+            return true;
+        }
+        
+        ss = s;
+        pp = p;
+        
+        bool match[sl + 1][pl + 1];
+        for (int i = 0; i < sl + 1; i++) {
+            for (int j = 0; j < pl + 1; j++) {
+                match[i][j] = false;
             }
         }
-        return false;
+        match[0][0] = true;
+        
+        //pp = p;
+        int i = 0;
+        while (p[i] == '*') {
+            for (int j = 0; j < sl + 1; j++) {
+                match[j][i + 1] = true;
+            }        
+            i++;
+        }
+        
+        for (int i = 1; i <= sl; i++) {
+            for (int j = 1; j <= pl; j++) {
+                if (s[i - 1] == p[j - 1] && match[i - 1][j - 1]) {
+                    match[i][j] = true;
+                } else if (p[j - 1] == '?') {
+                    match[i][j] = match[i - 1][j - 1];
+                } else if (p[j - 1] == '*') {
+                    if (match[i - 1][j - 1] || match[i][j - 1] || match[i - 1][j])
+                        match[i][j] = true;
+                } else
+                    match[i][j] = false;                
+            }
+        }
+        return match[sl][pl];
     }
 };
