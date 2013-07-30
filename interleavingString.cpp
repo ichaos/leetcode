@@ -23,11 +23,91 @@ private:
                 return true;
         return false;
     }
+    struct decision {
+        int i;
+        int j;
+        int m;
+        decision(int ii, int jj, int mm) : i(ii), j(jj), m(mm) {}
+    };
 public:
     bool isInterleave(string s1, string s2, string s3) {
         // Start typing your C/C++ solution below
         // DO NOT write int main() function   
         if (s1.size() + s2.size() != s3.size()) return false;
-        return _isInterleave(s1, 0, s2, 0, s3, 0);
+        
+        multiset<pair<int, int> > cache;
+        stack<decision> s;
+        int m = 0;
+        int i = 0;
+        int j = 0;
+        while (m < s3.size()) {
+            if (i == s1.size()) {
+                if (s2[j] == s3[m]) {
+                    j++;
+                    m++;
+                    continue;
+                } else {
+                    if (!s.empty()) {
+                        decision d = s.top();
+                        i = d.i;
+                        j = d.j + 1;
+                        m = d.m + 1;
+                        s.pop();
+                        cache.insert(make_pair(i, d.j));
+                    } else return false;
+                }
+            } else if (j == s2.size()) {
+                if (s1[i] == s3[m]) {
+                    i++;
+                    m++;
+                    continue;
+                } else {
+                    if (!s.empty()) {
+                       decision d = s.top();
+                       i = d.i;
+                       j = d.j + 1;
+                       m = d.m + 1;
+                       s.pop();
+                       cache.insert(make_pair(i, d.j));
+                    } else return false;
+                }               
+            } else {
+                if (s1[i] == s3[m] && s2[j] == s3[m]) {
+                    if (cache.find(make_pair(i, j)) != cache.end()) {
+                        if (!s.empty()) {
+                            decision d = s.top();
+                            i = d.i;
+                            j = d.j + 1;
+                            m = d.m + 1;
+                            s.pop();
+                            cache.insert(make_pair(i, d.j));
+                        } else return false;
+                        continue;
+                    }
+                    decision d(i, j, m);
+                    s.push(d);
+                    i++; m++;
+                } else if (s1[i] == s3[m]) {
+                    i++;
+                    m++;
+                } else if (s2[j] == s3[m]) {
+                    j++;
+                    m++;
+                } else {
+                    if (!s.empty()) {
+                       decision d = s.top();
+                       i = d.i;
+                       j = d.j + 1;
+                       m = d.m + 1;
+                       s.pop();
+                       cache.insert(make_pair(i, d.j));
+                    } else return false;
+                }
+            }
+            //if (s.empty()) return false;
+        }
+        
+        return true;
+        //return _isInterleave(s1, 0, s2, 0, s3, 0);
     }
 };
