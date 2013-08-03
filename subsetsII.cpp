@@ -19,17 +19,15 @@ If S = [1,2,2], a solution is:
  */
 class Solution {
 private:
-    void _subsetsWithDup(vector<vector<int> > &ret, vector<int> &S, vector<int> &num, int i,
-        vector<bool> &map) {
+    void _subsetsWithDup(vector<vector<int> > &ret, vector<int> &S, vector<int> &num, int i) {
         ret.push_back(num);
         
-        for ( ; i < S.size(); i++) {
-            if (map[i]) continue;
-            map[i] = true;
-            num.push_back(S[i]);
-            _subsetsWithDup(ret, S, num, i + 1, map);
+        for (int j = i ; j < S.size(); j++) {
+            if (i != j && S[j] == S[j - 1]) continue;
+
+            num.push_back(S[j]);
+            _subsetsWithDup(ret, S, num, j + 1);
             num.pop_back();
-            map[i] = false;
         }
     }
 public:
@@ -38,30 +36,8 @@ public:
         // DO NOT write int main() function
         vector<vector<int> > ret;
         vector<int> num;
-        vector<bool> map(S.size(), false);
         sort(S.begin(), S.end());
-        _subsetsWithDup(ret, S, num, 0, map);
-        
-        //deduplicate
-        sort(ret.begin(), ret.end());
-        vector<int> *prev = &ret[0];
-        for (int i = 1; i < ret.size(); i++) {
-            if (ret[i].size() != prev->size()) {
-                prev = &ret[i];
-            } else {
-                bool dup = true;
-                for (int j = 0; j < ret[i].size(); j++) {
-                    if ((*prev)[j] != ret[i][j]) {
-                        prev = &ret[i];
-                        dup = false;
-                    }
-                }
-                if (dup) {
-                    ret.erase(ret.begin() + i);
-                    i--;
-                }
-            }
-        }
+        _subsetsWithDup(ret, S, num, 0);
         return ret;
     }
 };
