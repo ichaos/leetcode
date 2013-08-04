@@ -23,7 +23,6 @@ isMatch("aab", "c*a*b") ? false
 
 using namespace std;
 
-
 class Solution {
 public:
     bool isMatch(const char *s, const char *p) {
@@ -41,10 +40,8 @@ public:
         }
         int pl = 0;
         const char *pp = p;
-        while (*pp) {
-            pl++;
-            pp++;
-        }
+        while(*pp){ if (*pp!='*') ++pl; ++pp; }
+        if (sl < pl) return false;
         
         vector<vector<bool> > dp(2, vector<bool>(sl + 1, false));
         dp[0][0] = true;
@@ -68,6 +65,7 @@ public:
                 }
             } else {
                 dp[cur][0] = false;
+                
                 for (int i = 1; i <= sl; i++) {
                     if (*p == '?' || *p == s[i - 1]) dp[cur][i] = dp[!cur][i - 1];
                     else dp[cur][i] = false;
