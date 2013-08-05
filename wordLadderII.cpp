@@ -1,6 +1,14 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include <queue>
+
+using namespace std;
+
 class Solution {
 private:
-    void findPath(map<string, vector<string>> &path, string end, vector<string> cur, 
+    void findPath(map<string, vector<string> > &path, string end, vector<string> cur, 
         vector<vector<string> > &ret) {
         cur.insert(cur.begin(), end);
         if (path.find(end) == path.end()) {
@@ -14,13 +22,13 @@ private:
         }
     }
 public:
-    vector<vector<string>> findLadders(string start, string end, unordered_set<string> &dict) {
+    vector<vector<string> > findLadders(string start, string end, set<string> &dict) {
         // Start typing your C/C++ solution below
         // DO NOT write int main() function
         vector<vector<string> > ret;
-        unordered_set<string> pass;
+        set<string> pass;
         
-        map<string, vector<string>> path;
+        map<string, vector<string> > path;
         
         if (start == end) {
             //vector<string>
@@ -45,11 +53,14 @@ public:
                     if (dict.find(t) != dict.end() && pass.find(t) == pass.end()) {
                         q.push(t);
                         level2++;
+                        cout << tmp << " -> " << t << endl;
                         path[t].push_back(tmp);
                     }
                     if (end == t) { //find one
-                        if (dict.find(t) == dict.end())
+                        if (dict.find(t) == dict.end()) {
+                            cout << tmp << " -> " << t << endl;
                             path[t].push_back(tmp);
+                        }
                         vector<string> cur;                        
                         findPath(path, end, cur, ret);
                     }
@@ -67,3 +78,22 @@ public:
         return ret;
     }
 };
+
+int main() {
+    Solution s;
+    set<string> dict;
+    dict.insert("hot");
+    dict.insert("hog");
+    dict.insert("dot");
+    dict.insert("dog");
+
+    vector<vector<string> > ret = s.findLadders("hot", "dog", dict);
+    for (int i = 0; i < ret.size(); i++) {
+
+        for (int j = 0; j < ret[i].size(); j++) {
+            cout << ret[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+}
