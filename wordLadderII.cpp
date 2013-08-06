@@ -29,6 +29,7 @@ public:
         set<string> pass;
         
         map<string, vector<string> > path;
+        map<string, int> dis;
         
         if (start == end) {
             //vector<string>
@@ -39,9 +40,13 @@ public:
         //int length = 0;
         queue<string> q;
         q.push(start);
-        
+        int distance = 1;
+        dis[start] = 0;
+        dict.insert(end);
+        bool find = false;
         while (!q.empty()) {
             string tmp = q.front();
+            
             q.pop();
             level1--;
             pass.insert(tmp);
@@ -51,25 +56,29 @@ public:
                     string t = tmp;
                     t[i] = 'a' + j;                    
                     if (dict.find(t) != dict.end() && pass.find(t) == pass.end()) {
-                        q.push(t);
-                        level2++;
-                        cout << tmp << " -> " << t << endl;
-                        path[t].push_back(tmp);
-                    }
-                    if (end == t) { //find one
-                        if (dict.find(t) == dict.end()) {
+                        if (dis[tmp] < distance && (dis[t] == 0 || dis[t] >= distance)) {
+                            if (path[t].empty())
+                                q.push(t);
+                            level2++;
+                            dis[t] = distance;
                             cout << tmp << " -> " << t << endl;
                             path[t].push_back(tmp);
                         }
-                        vector<string> cur;                        
-                        findPath(path, end, cur, ret);
+                    }
+                    if (end == t) { //find one
+                        find = true;
                     }
                 }
             }
             
             if (level1 == 0) {
                 //length++;
-                if (!ret.empty()) return ret;
+                if (find) {
+                    vector<string> cur;                        
+                    findPath(path, end, cur, ret);
+                    return ret;
+                }
+                distance++;
                 level1 = level2;
                 level2 = 0;
             }
@@ -82,12 +91,18 @@ public:
 int main() {
     Solution s;
     set<string> dict;
-    dict.insert("hot");
-    dict.insert("hog");
-    dict.insert("dot");
-    dict.insert("dog");
+    //"hot","cog","dot","dog","hit","lot","log"
+    //"red", "tax", ["ted","tex","red","tax","tad","den","rex","pee"]   
+    dict.insert("ted");
+    dict.insert("pee");
+    dict.insert("tex");
+    dict.insert("red");
+    dict.insert("tax");
+    dict.insert("tad");
+    dict.insert("den");
+    dict.insert("rex");
 
-    vector<vector<string> > ret = s.findLadders("hot", "dog", dict);
+    vector<vector<string> > ret = s.findLadders("red", "tax", dict);
     for (int i = 0; i < ret.size(); i++) {
 
         for (int j = 0; j < ret[i].size(); j++) {
